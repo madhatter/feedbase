@@ -1,6 +1,4 @@
-feedbase
---------
---------
+#feedbase
 
 Playing around with jRuby and HBase.
 
