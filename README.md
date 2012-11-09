@@ -2,6 +2,11 @@
 
 Playing around with jRuby and HBase.
 
+Setup:
+------
+* Setting the classpath: `export CLASSPATH=``hadoop classpath``:``hbase classpath`` `
+* Use jRuby: `rvm jruby`
+
 Usage:
 ------
 * Create the table with `ruby create_tables.rb`
