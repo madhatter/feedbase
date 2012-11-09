@@ -4,7 +4,7 @@ Playing around with jRuby and HBase.
 
 Setup:
 ------
-* Setting the classpath: `export CLASSPATH=`hadoop classpath`:`hbase classpath`` 
+* Setting the classpath: `export CLASSPATH=``hadoop classpath``:``hbase classpath``` 
 * Use jRuby: `rvm jruby`
 
 Usage:
