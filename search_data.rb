@@ -10,11 +10,13 @@ import org.apache.hadoop.hbase.client.Put
 import org.apache.hadoop.hbase.util.Bytes
 import org.apache.hadoop.hbase.client.Scan
 import org.apache.hadoop.io.Text
+import org.apache.hadoop.mapreduce.Job;
 
 raise "Must include search string as first arg" unless ARGV.length >= 1
 search = ARGV[0]
 puts search
 conf = HBaseConfiguration.new
+job = Job.new(conf, "feedbase_mr")
 
 table = HTable.new(conf, "links")
 

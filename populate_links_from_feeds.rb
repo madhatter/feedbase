@@ -15,13 +15,14 @@ import org.apache.hadoop.hbase.util.Bytes
 import org.apache.hadoop.io.Text
 
 add_counter = 0
-conf = HBaseConfiguration.new
-table = HTable.new(conf,"links")
+#conf = HBaseConfiguration.new
+#table = HTable.new(conf,"links")
 
 Dir.glob(File.join(File.dirname(__FILE__),"feeds","*.xml")).each do |feed_path|
     
   puts "***** START OF #{feed_path} *****"
       
+  next unless feed_path =~ /reddit/i
   open(feed_path,"r") do |istream|
     rss = SimpleRSS.parse(istream)
     rss.items.each do |itm|
@@ -34,11 +35,22 @@ Dir.glob(File.join(File.dirname(__FILE__),"feeds","*.xml")).each do |feed_path|
       next if link =~ /\.(gif|jpg|jpeg|png)$/i #ignore image links
                                     
       #add the link
-      key = Bytes.toBytes("sample#{add_counter}")
-      family = Bytes.toBytes("core")
-      column = Bytes.toBytes("link")
-      value = Bytes.toBytes(link)
-      table.put(Put.new(key).add(family,column,value))
+      #key = Bytes.toBytes("sample#{add_counter}")
+      #family = Bytes.toBytes("core")
+      #column = Bytes.toBytes("link")
+      #value = Bytes.toBytes(link)
+      #table.put(Put.new(key).add(family,column,value))
+
+      title = itm.title.strip
+
+      title_a = title.sub(/\)$/,'').rpartition(/\ \(/)
+      title_string = title_a[0]
+      points, comments = title_a[2].split(/;/)
+
+      puts title_string
+      puts points.strip unless comments.nil?
+      puts comments.strip unless comments.nil?
+
       puts "added sample#{add_counter}, #{link}"
       add_counter += 1
                                                 
