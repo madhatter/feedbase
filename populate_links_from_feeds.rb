@@ -23,8 +23,8 @@ def generate_row_key link
 end
 
 add_counter = 0
-#conf = HBaseConfiguration.new
-#table = HTable.new(conf,"links")
+conf = HBaseConfiguration.new
+table = HTable.new(conf,"links")
 
 Dir.glob(File.join(File.dirname(__FILE__),"feeds","*.xml")).each do |feed_path|
     
@@ -33,6 +33,7 @@ Dir.glob(File.join(File.dirname(__FILE__),"feeds","*.xml")).each do |feed_path|
   next unless feed_path =~ /reddit/i
   open(feed_path,"r") do |istream|
     rss = SimpleRSS.parse(istream)
+    feed_title = rss.title
     rss.items.each do |itm|
       link = itm.link.strip
       
@@ -42,13 +43,6 @@ Dir.glob(File.join(File.dirname(__FILE__),"feeds","*.xml")).each do |feed_path|
       next if link =~ /github\.com/i #ignore github links
       next if link =~ /\.(gif|jpg|jpeg|png)$/i #ignore image links
                                     
-      #add the link
-      #key = Bytes.toBytes("sample#{add_counter}")
-      #family = Bytes.toBytes("core")
-      #column = Bytes.toBytes("link")
-      #value = Bytes.toBytes(link)
-      #table.put(Put.new(key).add(family,column,value))
-
       title = itm.title.strip
 
       title_a = title.sub(/\)$/,'').rpartition(/\ \(/)
@@ -56,14 +50,46 @@ Dir.glob(File.join(File.dirname(__FILE__),"feeds","*.xml")).each do |feed_path|
       points, comments = title_a[2].split(/;/)
 
       puts title_string
-      puts points.strip unless comments.nil?
-      puts comments.strip unless comments.nil?
+      points_num = points.scan(/\d+/)[0].to_s unless points.nil?
+      comments_count = comments.scan(/\d+/)[0].to_s unless comments.nil?
+      puts points_num
+      puts comments_count
 
       date = itm.pubDate.strftime('%d.%m.%Y %H:%M:%S')
       rowkey =  generate_row_key link
       puts "Added ##{rowkey} published #{date}"
       add_counter += 1
-                                                
+      
+      ##add the core data
+      #add the link
+      key = Bytes.toBytes("#{rowkey}")
+      family = Bytes.toBytes("core")
+      column = Bytes.toBytes("link")
+      value = Bytes.toBytes(link)
+      table.put(Put.new(key).add(family,column,value))
+      #add the link title
+      family = Bytes.toBytes("core")
+      column = Bytes.toBytes("title")
+      value = Bytes.toBytes(title_string)
+      table.put(Put.new(key).add(family,column,value))
+ 
+      ##add the meta
+      #add the feed title
+      family = Bytes.toBytes("meta")
+      column = Bytes.toBytes("feed_title")
+      value = Bytes.toBytes(feed_title)
+      table.put(Put.new(key).add(family,column,value))
+      #add the comment count
+      family = Bytes.toBytes("meta")
+      column = Bytes.toBytes("comments")
+      value = Bytes.toBytes(comments_count)
+      table.put(Put.new(key).add(family,column,value))
+      #add the points
+      family = Bytes.toBytes("meta")
+      column = Bytes.toBytes("points")
+      value = Bytes.toBytes(points_num)
+      table.put(Put.new(key).add(family,column,value))
+
     end
   end
                                                         
