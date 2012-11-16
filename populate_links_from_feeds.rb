@@ -38,10 +38,11 @@ Dir.glob(File.join(File.dirname(__FILE__),"feeds","*.xml")).each do |feed_path|
       link = itm.link.strip
       
       next if link =~ /reddit\.com/i #ignore reddit self-posts
-      next if link =~ /imgur\.com/i #ignore image links
-      next if link =~ /youtube\.com/i #ignore youtube links
-      next if link =~ /github\.com/i #ignore github links
-      next if link =~ /\.(gif|jpg|jpeg|png)$/i #ignore image links
+      #don't ignore too much for now
+      #next if link =~ /imgur\.com/i #ignore image links
+      #next if link =~ /youtube\.com/i #ignore youtube links
+      #next if link =~ /github\.com/i #ignore github links
+      #next if link =~ /\.(gif|jpg|jpeg|png)$/i #ignore image links
                                     
       title = itm.title.strip
 
@@ -49,16 +50,14 @@ Dir.glob(File.join(File.dirname(__FILE__),"feeds","*.xml")).each do |feed_path|
       title_string = title_a[0]
       points, comments = title_a[2].split(/;/)
 
-      puts title_string
       points_num = points.scan(/\d+/)[0].to_s unless points.nil?
       comments_count = comments.scan(/\d+/)[0].to_s unless comments.nil?
-      puts points_num
-      puts comments_count
 
       date = itm.pubDate.strftime('%d.%m.%Y %H:%M:%S')
+      author = itm.author
+      description = itm.description
+
       rowkey =  generate_row_key link
-      puts "Added ##{rowkey} published #{date}"
-      add_counter += 1
       
       key = Bytes.toBytes("#{rowkey}")
       p = Put.new(key)
@@ -91,12 +90,30 @@ Dir.glob(File.join(File.dirname(__FILE__),"feeds","*.xml")).each do |feed_path|
       column = Bytes.toBytes("points")
       value = Bytes.toBytes(points_num)
       p.add(family,column,value)
-
+      #add the publish date
+      family = Bytes.toBytes("meta")
+      column = Bytes.toBytes("pdate")
+      value = Bytes.toBytes(date)
+      p.add(family,column,value)
+      #add the author
+      family = Bytes.toBytes("meta")
+      column = Bytes.toBytes("author")
+      value = Bytes.toBytes(author)
+      p.add(family,column,value)
+      #add the description
+      family = Bytes.toBytes("meta")
+      column = Bytes.toBytes("desc")
+      value = Bytes.toBytes(description)
+      p.add(family,column,value)
+ 
       #put it
       table.put(p)
+
+      puts "Added ##{rowkey} published #{date}"
+      add_counter += 1
     end
   end
-                                                        
+                                                    
   puts "***** END OF #{feed_path} *****"
 end
-
+puts "#{add_counter} links added."
