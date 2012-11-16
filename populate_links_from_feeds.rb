@@ -56,8 +56,8 @@ Dir.glob(File.join(File.dirname(__FILE__),"feeds","*.xml")).each do |feed_path|
       points, comments = title_a[2].split(/;/)
 
       puts title_string
-      puts points.strip unless comments.nil?
-      puts comments.strip unless comments.nil?
+      puts points.scan(/\d+/)[0].to_s unless points.nil?
+      puts comments.scan(/\d+/)[0].to_s unless comments.nil?
 
       date = itm.pubDate.strftime('%d.%m.%Y %H:%M:%S')
       rowkey =  generate_row_key link
