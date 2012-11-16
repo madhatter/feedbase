@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'simple-rss'
 require 'open-uri'
+require 'digest/md5'
 
 include Java
 
@@ -13,6 +14,13 @@ import org.apache.hadoop.hbase.client.HTable
 import org.apache.hadoop.hbase.client.Put
 import org.apache.hadoop.hbase.util.Bytes
 import org.apache.hadoop.io.Text
+
+# Methods, needs to be an Object in the near future.
+def generate_row_key link
+  # rowkey is 'md5_hashed_link'
+  d = Digest::MD5.new
+  d.hexdigest link
+end
 
 add_counter = 0
 #conf = HBaseConfiguration.new
@@ -51,7 +59,9 @@ Dir.glob(File.join(File.dirname(__FILE__),"feeds","*.xml")).each do |feed_path|
       puts points.strip unless comments.nil?
       puts comments.strip unless comments.nil?
 
-      puts "added sample#{add_counter}, #{link}"
+      date = itm.pubDate.strftime('%d.%m.%Y %H:%M:%S')
+      rowkey =  generate_row_key link
+      puts "Added ##{rowkey} published #{date}"
       add_counter += 1
                                                 
     end
@@ -59,3 +69,4 @@ Dir.glob(File.join(File.dirname(__FILE__),"feeds","*.xml")).each do |feed_path|
                                                         
   puts "***** END OF #{feed_path} *****"
 end
+
