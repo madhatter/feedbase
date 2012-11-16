@@ -3,6 +3,8 @@ require 'simple-rss'
 require 'open-uri'
 require 'digest/md5'
 
+require_relative './lib/hbase_table.rb'
+
 include Java
 
 import org.apache.hadoop.hbase.HBaseConfiguration
@@ -23,8 +25,9 @@ def generate_row_key link
 end
 
 add_counter = 0
-conf = HBaseConfiguration.new
-table = HTable.new(conf,"links")
+#conf = HBaseConfiguration.new
+#table = HTable.new(conf,"links")
+table = HBaseTable.new("links")
 
 Dir.glob(File.join(File.dirname(__FILE__),"feeds","*.xml")).each do |feed_path|
     
@@ -60,52 +63,20 @@ Dir.glob(File.join(File.dirname(__FILE__),"feeds","*.xml")).each do |feed_path|
       rowkey =  generate_row_key link
       
       key = Bytes.toBytes("#{rowkey}")
-      p = Put.new(key)
+      #p = Put.new(key)
+      p = HBasePut.new(key)
       
-      ##add the core data
-      #add the link
-      family = Bytes.toBytes("core")
-      column = Bytes.toBytes("link")
-      value = Bytes.toBytes(link)
-      p.add(family,column,value)
-      #add the link title
-      family = Bytes.toBytes("core")
-      column = Bytes.toBytes("title")
-      value = Bytes.toBytes(title_string)
-      p.add(family,column,value)
- 
-      ##add the meta
-      #add the feed title
-      family = Bytes.toBytes("meta")
-      column = Bytes.toBytes("feed_title")
-      value = Bytes.toBytes(feed_title)
-      p.add(family,column,value)
-      #add the comment count
-      family = Bytes.toBytes("meta")
-      column = Bytes.toBytes("comments")
-      value = Bytes.toBytes(comments_count)
-      p.add(family,column,value)
-      #add the points
-      family = Bytes.toBytes("meta")
-      column = Bytes.toBytes("points")
-      value = Bytes.toBytes(points_num)
-      p.add(family,column,value)
-      #add the publish date
-      family = Bytes.toBytes("meta")
-      column = Bytes.toBytes("pdate")
-      value = Bytes.toBytes(date)
-      p.add(family,column,value)
-      #add the author
-      family = Bytes.toBytes("meta")
-      column = Bytes.toBytes("author")
-      value = Bytes.toBytes(author)
-      p.add(family,column,value)
-      #add the description
-      family = Bytes.toBytes("meta")
-      column = Bytes.toBytes("desc")
-      value = Bytes.toBytes(description)
-      p.add(family,column,value)
- 
+      ###add the core data
+      p.add("core", "link", link)
+      p.add("core", "title", title_string)
+      ###add the meta
+      p.add("meta", "feed_title", feed_title)
+      p.add("meta", "comments", comments_count)
+      p.add("meta", "points", points_num)
+      p.add("meta", "pdate", date)
+      p.add("meta", "author", author)
+      p.add("meta", "desc", description)
+
       #put it
       table.put(p)
 
