@@ -1,3 +1,4 @@
+# HBaseTable class is just a wrapper class for the HTable Java class
 include Java
 
 import org.apache.hadoop.hbase.HBaseConfiguration
@@ -20,18 +21,3 @@ class HBaseTable
     @table.put(put.put)
   end
 end
-
-class HBasePut
-  attr_reader :put 
-  def initialize(rowkey)
-    @put = Put.new(rowkey)
-    @put
-  end
-
-  def add(family, column, value)
-   family = Bytes.toBytes(family)
-   column = Bytes.toBytes(column)
-   value = Bytes.toBytes(value)
-   @put.add(family,column,value)
-  end
-end 

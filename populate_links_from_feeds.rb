@@ -4,6 +4,7 @@ require 'open-uri'
 require 'digest/md5'
 
 require_relative './lib/hbase_table.rb'
+require_relative './lib/hbase_put.rb'
 
 include Java
 
@@ -25,8 +26,6 @@ def generate_row_key link
 end
 
 add_counter = 0
-#conf = HBaseConfiguration.new
-#table = HTable.new(conf,"links")
 table = HBaseTable.new("links")
 
 Dir.glob(File.join(File.dirname(__FILE__),"feeds","*.xml")).each do |feed_path|
