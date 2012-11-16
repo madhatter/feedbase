@@ -6,18 +6,6 @@ require 'digest/md5'
 require_relative './lib/hbase_table.rb'
 require_relative './lib/hbase_put.rb'
 
-include Java
-
-import org.apache.hadoop.hbase.HBaseConfiguration
-import org.apache.hadoop.hbase.HColumnDescriptor
-import org.apache.hadoop.hbase.HConstants
-import org.apache.hadoop.hbase.HTableDescriptor
-import org.apache.hadoop.hbase.client.HBaseAdmin
-import org.apache.hadoop.hbase.client.HTable
-import org.apache.hadoop.hbase.client.Put
-import org.apache.hadoop.hbase.util.Bytes
-import org.apache.hadoop.io.Text
-
 # Methods, needs to be an Object in the near future.
 def generate_row_key link
   # rowkey is 'md5_hashed_link'
