@@ -16,7 +16,7 @@ import org.apache.hadoop.io.Text
 class HBasePut
   attr_reader :put 
   def initialize(rowkey)
-    @put = Put.new(rowkey)
+    @put = Put.new(Bytes.toBytes(rowkey))
     @put
   end
 
