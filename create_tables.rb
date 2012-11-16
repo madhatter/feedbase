@@ -20,8 +20,8 @@ desc.addFamily(HColumnDescriptor.new("meta"))
 desc.addFamily(HColumnDescriptor.new("stats"))
 admin = HBaseAdmin.new(conf)
 if admin.isTableAvailable(tablename)
-    admin.disableTable(tablename)
-      admin.deleteTable(tablename)
+  admin.disableTable(tablename)
+  admin.deleteTable(tablename)
 end
 admin.createTable(desc)
 tables = admin.listTables

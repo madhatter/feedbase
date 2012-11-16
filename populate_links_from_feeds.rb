@@ -60,36 +60,40 @@ Dir.glob(File.join(File.dirname(__FILE__),"feeds","*.xml")).each do |feed_path|
       puts "Added ##{rowkey} published #{date}"
       add_counter += 1
       
+      key = Bytes.toBytes("#{rowkey}")
+      p = Put.new(key)
+      
       ##add the core data
       #add the link
-      key = Bytes.toBytes("#{rowkey}")
       family = Bytes.toBytes("core")
       column = Bytes.toBytes("link")
       value = Bytes.toBytes(link)
-      table.put(Put.new(key).add(family,column,value))
+      p.add(family,column,value)
       #add the link title
       family = Bytes.toBytes("core")
       column = Bytes.toBytes("title")
       value = Bytes.toBytes(title_string)
-      table.put(Put.new(key).add(family,column,value))
+      p.add(family,column,value)
  
       ##add the meta
       #add the feed title
       family = Bytes.toBytes("meta")
       column = Bytes.toBytes("feed_title")
       value = Bytes.toBytes(feed_title)
-      table.put(Put.new(key).add(family,column,value))
+      p.add(family,column,value)
       #add the comment count
       family = Bytes.toBytes("meta")
       column = Bytes.toBytes("comments")
       value = Bytes.toBytes(comments_count)
-      table.put(Put.new(key).add(family,column,value))
+      p.add(family,column,value)
       #add the points
       family = Bytes.toBytes("meta")
       column = Bytes.toBytes("points")
       value = Bytes.toBytes(points_num)
-      table.put(Put.new(key).add(family,column,value))
+      p.add(family,column,value)
 
+      #put it
+      table.put(p)
     end
   end
                                                         
