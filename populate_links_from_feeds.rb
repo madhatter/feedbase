@@ -1,3 +1,6 @@
+# The script that fills the feed data into the HBase table
+# Looks for xml files in the feeds directory
+
 require 'rubygems'
 require 'simple-rss'
 require 'open-uri'
