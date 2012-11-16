@@ -14,4 +14,5 @@ end
 download_feed "http://weeklyreddit.appspot.com/rss/science", "reddit-science"
 download_feed "http://weeklyreddit.appspot.com/rss/technology", "reddit-technology"
 download_feed "http://weeklyreddit.appspot.com/rss/worldnews", "reddit-worldnews"
+# the hacker news feed lacks lots of useful meta information...
 download_feed "http://news.ycombinator.com/rss", "hacker-news"

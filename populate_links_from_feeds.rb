@@ -20,7 +20,7 @@ Dir.glob(File.join(File.dirname(__FILE__),"feeds","*.xml")).each do |feed_path|
     
   puts "***** START OF #{feed_path} *****"
       
-  next unless feed_path =~ /reddit/i
+  #next unless feed_path =~ /reddit/i
   open(feed_path,"r") do |istream|
     rss = SimpleRSS.parse(istream)
     feed_title = rss.title
@@ -36,15 +36,20 @@ Dir.glob(File.join(File.dirname(__FILE__),"feeds","*.xml")).each do |feed_path|
                                     
       title = itm.title.strip
 
-      title_a = title.sub(/\)$/,'').rpartition(/\ \(/)
-      title_string = title_a[0]
-      points, comments = title_a[2].split(/;/)
+      if feed_title =~ /reddit/i
+        title_a = title.sub(/\)$/,'').rpartition(/\ \(/)
+        title_string = title_a[0]
+        points, comments = title_a[2].split(/;/)
+        points_num = points.scan(/\d+/)[0].to_s unless points.nil?
+        comments_count = comments.scan(/\d+/)[0].to_s unless comments.nil?
+     else
+        title_string = title
+      end
 
-      points_num = points.scan(/\d+/)[0].to_s unless points.nil?
-      comments_count = comments.scan(/\d+/)[0].to_s unless comments.nil?
-
-      date = itm.pubDate.strftime('%d.%m.%Y %H:%M:%S')
-      author = itm.author
+      date = nil
+      date ||= itm.pubDate.strftime('%d.%m.%Y %H:%M:%S') unless itm.pubDate.nil?
+      author = "not available"
+      author ||= itm.author 
       description = itm.description
 
       rowkey =  generate_row_key link
@@ -58,10 +63,10 @@ Dir.glob(File.join(File.dirname(__FILE__),"feeds","*.xml")).each do |feed_path|
       p.add("core", "title", title_string)
       ###add the meta
       p.add("meta", "feed_title", feed_title)
-      p.add("meta", "comments", comments_count)
-      p.add("meta", "points", points_num)
-      p.add("meta", "pdate", date)
-      p.add("meta", "author", author)
+      p.add("meta", "comments", comments_count) unless comments_count.nil?
+      p.add("meta", "points", points_num) unless points_num.nil?
+      p.add("meta", "pdate", date) unless date.nil?
+      p.add("meta", "author", author) 
       p.add("meta", "desc", description)
 
       #put it
