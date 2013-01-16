@@ -1,0 +1,6 @@
+*.swp
+*.output
+*.pid
+*.out
+feeds
+Gemfile.lock
