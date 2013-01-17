@@ -18,7 +18,8 @@ Notes:
 ------
 The _parser_ is optimized for the weekly reddit feeds at the moment. There may be feeds
 that have more useful meta information that does not get parsed or that lacks lots of default
-meta information like the Hacker News feed.
+meta information like the Hacker News feed. You will have to add code for that by yourself.
+For now I use a simple MD5 hash of the URL as rowkey in the HBase table. That is not ideal.
 
 That's almost it. For now.
 

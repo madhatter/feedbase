@@ -57,9 +57,6 @@ Dir.glob(File.join(File.dirname(__FILE__),"feeds","*.xml")).each do |feed_path|
 
       rowkey =  generate_row_key link
       
-      key = Bytes.toBytes("#{rowkey}")
-      #p = Put.new(key)
-      #p = HBasePut.new(generate_row_key link)
       p = HBasePut.new(rowkey)
       
       ###add the core data
